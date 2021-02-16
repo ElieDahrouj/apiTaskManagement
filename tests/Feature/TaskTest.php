@@ -101,10 +101,11 @@ class TaskTest extends TestCase
      */
     public function showOneTaskForUserConnected()
     {
-        Sanctum::actingAs(
-            User::find(1),['*']
-        );
-        $this->get('/api/task/10')->assertStatus(200);
+        $user = User::factory(User::class)->create();
+        $task = Tasks::factory(Tasks::class)->create([
+            'user_id' => $user->getAttribute('id')
+        ]);
+        $this->actingAs($user)->get('/api/task/'.$task->getAttribute('id'))->assertStatus(200);
     }
 
     /**
@@ -199,11 +200,12 @@ class TaskTest extends TestCase
      * @test
      */
     public function updateOneTaskSucceed(){
-        Sanctum::actingAs(
-            User::find(1),['*']
-        );
+        $user = User::factory(User::class)->create();
+        $task = Tasks::factory(Tasks::class)->create([
+            'user_id' => $user->getAttribute('id')
+        ]);
         $this->withHeaders([
             'Accept'=>'Application/json',
-        ])->put('/api/task/10',['completed'=>true])->assertStatus(200);
+        ])->actingAs($user)->put('/api/task/'.$task->getAttribute('id'),['completed'=>true])->assertStatus(200);
     }
 }
