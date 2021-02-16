@@ -126,8 +126,10 @@ class TaskTest extends TestCase
         Sanctum::actingAs(
             User::find(1),['*']
         );
+        $user = User::factory(User::class)->create();
+        $task = Tasks::factory(Tasks::class)->create();
 
-        $this->get('/api/task/1')->assertStatus(422);
+        $this->actingAs($user)->get('/api/task/'.$task->getAttribute('id'))->assertStatus(422);
     }
 
     /**
